@@ -74,7 +74,7 @@ function populateCategories() {
     categories.forEach(cat => {
         const option = document.createElement('option');
         option.value = cat;
-        option.textContent = cat; // Use textContent here
+        option.textContent = cat;
         categoryFilter.appendChild(option);
     });
 }
@@ -85,16 +85,42 @@ function addQuote() {
     
     if (newQuote && quoteCat) {
         const newQuoteObject = { quote: newQuote, cat: quoteCat };
+        
+        // Save locally first
         quotes.push(newQuoteObject);
         saveQuotes();
         populateCategories(); // Update categories
         newQuotetext.value = '';
         newQuoteCategory.value = '';
+
+        // Send the new quote to the server
+        postQuoteToServer(newQuoteObject);
         alert("Quote added!");
     } else {
         alert("Please fill in both fields.");
         newQuotetext.value = "";
         newQuoteCategory.value = "";
+    }
+}
+
+async function postQuoteToServer(quote) {
+    try {
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(quote),
+        });
+
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+
+        const responseData = await response.json();
+        console.log('Quote successfully posted to server:', responseData);
+    } catch (error) {
+        console.error('Error posting quote to server:', error);
     }
 }
 
