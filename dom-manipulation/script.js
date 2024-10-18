@@ -17,12 +17,12 @@ function showRandomQuote(category = 'all') {
     
     if (filteredQuotes.length === 0) {
         alert("Add quotes to see output.");
-        quotedisplay.innerText = "Add quotes to see output.";
+        quotedisplay.textContent = "Add quotes to see output.";
         return;
     } else {
         const randIndex = Math.floor(Math.random() * filteredQuotes.length);
         const randomQuote = filteredQuotes[randIndex];
-        quotedisplay.innerText = `${randomQuote.quote} - ${randomQuote.cat}`;
+        quotedisplay.textContent = `${randomQuote.quote} - ${randomQuote.cat}`;
         
         // Optionally store the last viewed quote in session storage
         sessionStorage.setItem('lastViewedQuote', JSON.stringify(randomQuote));
@@ -35,7 +35,7 @@ function populateCategories() {
     categories.forEach(cat => {
         const option = document.createElement('option');
         option.value = cat;
-        option.innerText = cat;
+        option.textContent = cat; // Use textContent here
         categoryFilter.appendChild(option);
     });
 }
@@ -104,6 +104,5 @@ populateCategories();
 // Load last viewed quote from session storage if available
 const lastQuote = JSON.parse(sessionStorage.getItem('lastViewedQuote'));
 if (lastQuote) {
-    quotedisplay.innerText = `${lastQuote.quote} - ${lastQuote.cat}`;
+    quotedisplay.textContent = `${lastQuote.quote} - ${lastQuote.cat}`;
 }
-
