@@ -40,6 +40,18 @@ function syncQuotes(serverQuotes) {
 
     saveQuotes();
     populateCategories();
+    
+    // Notify that quotes have been synced with the server
+    showSyncNotification("Quotes synced with server!");
+}
+
+// Show sync notification
+function showSyncNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'sync-notification'; // Optional: add a class for styling
+    document.body.prepend(notification);
+    setTimeout(() => notification.remove(), 3000);
 }
 
 // Show conflict notification
