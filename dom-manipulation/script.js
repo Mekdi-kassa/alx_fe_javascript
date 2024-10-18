@@ -7,10 +7,49 @@ const importFileInput = document.getElementById('importFile');
 const categoryFilter = document.getElementById('categoryFilter');
 
 let quotes = JSON.parse(localStorage.getItem('quotes')) || [];
+const apiUrl = 'https://jsonplaceholder.typicode.com/posts'; // Mock API endpoint
 
 // Load last selected category from local storage
 const lastCategory = localStorage.getItem('lastSelectedCategory') || 'all';
 categoryFilter.value = lastCategory;
+
+// Fetch quotes from the mock server
+async function fetchQuotesFromServer() {
+    try {
+        const response = await fetch(apiUrl);
+        const serverQuotes = await response.json();
+        
+        // Simulate extracting quotes
+        const newQuotes = serverQuotes.map(q => ({ quote: q.title, cat: 'Imported' }));
+        syncQuotes(newQuotes);
+    } catch (error) {
+        console.error('Error fetching quotes:', error);
+    }
+}
+
+// Sync local quotes with server quotes
+function syncQuotes(serverQuotes) {
+    const localQuoteTexts = quotes.map(q => q.quote);
+    
+    serverQuotes.forEach(serverQuote => {
+        if (!localQuoteTexts.includes(serverQuote.quote)) {
+            quotes.push(serverQuote);
+            showConflictNotification(`New quote added: "${serverQuote.quote}"`);
+        }
+    });
+
+    saveQuotes();
+    populateCategories();
+}
+
+// Show conflict notification
+function showConflictNotification(message) {
+    const notification = document.createElement('div');
+    notification.textContent = message;
+    notification.className = 'notification';
+    document.body.prepend(notification);
+    setTimeout(() => notification.remove(), 3000);
+}
 
 function showRandomQuote(category = 'all') {
     const filteredQuotes = quotes.filter(q => category === 'all' || q.cat === category);
@@ -106,3 +145,6 @@ const lastQuote = JSON.parse(sessionStorage.getItem('lastViewedQuote'));
 if (lastQuote) {
     quotedisplay.textContent = `${lastQuote.quote} - ${lastQuote.cat}`;
 }
+
+// Periodically fetch quotes from the server every 30 seconds
+setInterval(fetchQuotesFromServer, 30000);
